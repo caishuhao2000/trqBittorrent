@@ -151,7 +151,7 @@ let exportTorrentFN = () => {};
 
 const initializeWindows = () => {
     saveWindowSize = (windowId) => {
-        const size = $(windowId).getSize();
+        const size = document.getElementById(windowId).getSize();
         LocalPreferences.set(`window_${windowId}_width`, size.x);
         LocalPreferences.set(`window_${windowId}_height`, size.y);
     };
@@ -166,8 +166,8 @@ const initializeWindows = () => {
 
     const addClickEvent = (el, fn) => {
         ["Link", "Button"].each((item) => {
-            if ($(el + item))
-                $(el + item).addEventListener("click", fn);
+            if (document.getElementById(el + item))
+                document.getElementById(el + item).addEventListener("click", fn);
         });
     };
 
@@ -207,6 +207,32 @@ const initializeWindows = () => {
         });
         updateMainData();
     };
+
+    addClickEvent("torrentCreator", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const id = "torrentCreatorPage";
+        new MochaUI.Window({
+            id: id,
+            icon: "images/torrent-creator.svg",
+            title: "QBT_TR(Torrent Creator)QBT_TR[CONTEXT=TorrentCreator]",
+            loadMethod: "xhr",
+            contentURL: "views/torrentcreator.html",
+            scrollbars: true,
+            maximizable: true,
+            paddingVertical: 0,
+            paddingHorizontal: 0,
+            width: loadWindowWidth(id, 900),
+            height: loadWindowHeight(id, 400),
+            onResize: () => {
+                saveWindowSize(id);
+            },
+            onClose: () => {
+                window.qBittorrent.TorrentCreator.unload();
+            }
+        });
+    });
 
     addClickEvent("preferences", (e) => {
         e.preventDefault();
